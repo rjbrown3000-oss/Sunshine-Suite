@@ -1,33 +1,35 @@
 import streamlit as st
 import datetime
-import random
 from streamlit_autorefresh import st_autorefresh
 
 # 1. ANALYZER SYNC
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=60000, key="executive_sync_v126")
+st_autorefresh(interval=60000, key="executive_v127_lock")
 
-# 2. THE BRAIN: LED & PROBABILITY UI
+# 2. THE UI: COURT, LED, & METERS
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
 
+    /* RESTORED BASKETBALL COURT */
+    [data-testid="stAppViewContainer"] {
+        background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
+        url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2669&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
     /* LED SCOREBOARD */
     .led-board {
         background: #000;
-        border-top: 2px solid #444;
-        border-bottom: 2px solid #00ff00;
-        padding: 10px 0;
-        overflow: hidden;
-        display: flex;
+        border-top: 2px solid #444; border-bottom: 2px solid #00ff00;
+        padding: 10px 0; overflow: hidden; display: flex;
     }
     .led-ticker {
-        font-family: 'Orbitron', sans-serif;
-        white-space: nowrap;
-        color: #00ff00;
-        text-shadow: 0 0 8px #00ff00;
-        font-size: 1.1rem;
-        animation: slide-left 45s linear infinite;
+        font-family: 'Orbitron', sans-serif; white-space: nowrap;
+        color: #00ff00; text-shadow: 0 0 8px #00ff00;
+        font-size: 1.1rem; animation: slide-left 40s linear infinite;
     }
     .led-dot {
         height: 10px; width: 10px; background-color: #ff0000;
@@ -48,27 +50,13 @@ st.markdown("""
     }
 
     /* PROBABILITY METERS */
-    .meter-bg {
-        background: rgba(255,255,255,0.1);
-        border-radius: 10px;
-        height: 12px;
-        width: 100%;
-        margin-top: 8px;
-    }
-    .meter-fill {
-        background: linear-gradient(90deg, #00ff00, #adff2f);
-        height: 100%;
-        border-radius: 10px;
-        box-shadow: 0 0 10px #00ff00;
-    }
+    .meter-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; width: 100%; margin-top: 5px; }
+    .meter-fill { background: #00ff00; height: 100%; border-radius: 10px; box-shadow: 0 0 8px #00ff00; }
 
-    /* CARD STYLING */
+    /* CARDS */
     .prop-card {
-        background: rgba(0,0,0,0.7); 
-        border-left: 10px solid #00ff00;
-        padding: 20px; 
-        border-radius: 15px; 
-        margin-bottom: 15px;
+        background: rgba(0,0,0,0.7); border-left: 10px solid #00ff00;
+        padding: 20px; border-radius: 15px; margin-bottom: 15px;
     }
     h1, h2, h3, b, p, span { color: white !important; text-shadow: 2px 2px 10px #000 !important; }
 </style>
@@ -79,65 +67,52 @@ st.markdown(f"""
 <div class="led-board">
     <div class="led-ticker">
         <span class="led-dot"></span> FEB 5-6: GIANNIS (OUT) <span class="led-dot"></span> 
-        TRAE YOUNG (OUT) <span class="led-dot"></span> CUNNINGHAM (GTD) <span class="led-dot"></span> 
-        PROBABILITY ENGINE: ONLINE <span class="led-dot"></span> 🏀 NIGHTOWL MODE STANDBY
+        TRAE YOUNG (OUT) <span class="led-dot"></span> BRUNSON O/U 27.5 [HOT] <span class="led-dot"></span> 
+        🏀 ANALYZER V.127 ONLINE <span class="led-dot"></span> NIGHTOWL SWAP: STANDBY
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="ricky-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. SIDEBAR INJURY REPORT
+# 4. SIDEBAR
 with st.sidebar:
     st.markdown("## 📊 INJURY REPORT")
-    st.error("**GIANNIS ANTETOKOUNMPO**\n\nOUT (Calf)")
-    st.error("**TRAE YOUNG**\n\nOUT (Knee)")
-    st.warning("**CADE CUNNINGHAM**\n\nGTD (Wrist)")
+    st.error("**GIANNIS** (OUT) | **TRAE** (OUT)")
+    st.warning("**CUNNINGHAM** (GTD)")
     st.write("---")
-    force_night = st.toggle("🌙 Manual Nightowl Swap")
+    night_toggle = st.toggle("🌙 Manual Nightowl")
 
-# 5. TABS & ANALYZER
+# 5. TABS
 tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PARLAYS"])
 
-now = datetime.datetime.now()
-is_night = (now.hour >= 22 or now.hour < 6) or force_night
-
 with tab1:
-    st.subheader("🌙 Nightowl Early Lines" if is_night else "🎯 Active Projections")
-    
-    # Analyzer Data with Confidence/Probability
     props = [
-        {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "id": "1629008", "proj": 27.2, "prob": 78},
-        {"name": "Kelly Oubre Jr.", "line": 14.5, "stat": "PTS", "id": "1626162", "proj": 16.1, "prob": 64},
-        {"name": "Jalen Duren", "line": 11.5, "stat": "REB", "id": "1631105", "proj": 13.8, "prob": 82}
+        {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "id": "1629008", "proj": 27.2, "prob": 78, "trend": "up"},
+        {"name": "Jalen Duren", "line": 11.5, "stat": "REB", "id": "1631105", "proj": 13.8, "prob": 82, "trend": "up"}
     ]
-
     for p in props:
+        trend_icon = "📈" if p['trend'] == "up" else "📉"
         edge = round(p['proj'] - p['line'], 1)
         st.markdown(f"""
         <div class="prop-card">
             <div style="display: flex; align-items: center;">
-                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{p['id']}.png" style="width:80px; margin-right:20px; border-radius:50%; border:2px solid #00ff00; background:#000;">
+                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{p['id']}.png" style="width:70px; margin-right:15px; border-radius:50%; border:2px solid #00ff00;">
                 <div style="flex-grow:1;">
-                    <b style="font-size:1.4rem;">{p['name'].upper()}</b><br>
+                    <b>{p['name'].upper()} {trend_icon}</b><br>
                     <span>{p['stat']} Line: {p['line']} | <span style="color:#00ff00;">Proj: {p['proj']}</span></span>
                     <div class="meter-bg"><div class="meter-fill" style="width: {p['prob']}%;"></div></div>
                     <small style="color:#00ff00;">{p['prob']}% Hit Probability</small>
                 </div>
-                <div style="text-align:right; min-width:80px;">
-                    <b style="font-size:1.8rem; color:#00ff00;">+{edge}</b><br><small>EDGE</small>
+                <div style="text-align:right;">
+                    <b style="font-size:1.5rem; color:#00ff00;">+{edge}</b><br><small>EDGE</small>
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
 with tab2:
-    st.info("📡 **Live Intel:** Monitor Detroit rotations; Duren's rebounding edge has increased due to interior matchups.")
+    st.info("📡 Live data polling in progress...")
 
 with tab3:
-    st.subheader("📈 Executive Parlay Builder")
-    # This success message was causing the crash because it wasn't closed correctly
     st.success("📈 **Executive Lock:** MPJ (O24.5) + Jalen Duren (O11.5 REB) = +245 Estimated")
-    
-    st.write("---")
-    st.info("💡 **Selection Mode:** Click the player cards in 'The Board' to add them to your slip. (Logic integration in progress)")
