@@ -1,4 +1,4 @@
-9import streamlit as st
+import streamlit as st
 import datetime
 import random
 from streamlit_autorefresh import st_autorefresh
