@@ -135,4 +135,9 @@ with tab2:
     st.info("📡 **Live Intel:** Monitor Detroit rotations; Duren's rebounding edge has increased due to interior matchups.")
 
 with tab3:
-    st.success("📈 **Executive Lock:** MPJ (O24.5) + J
+    st.subheader("📈 Executive Parlay Builder")
+    # This success message was causing the crash because it wasn't closed correctly
+    st.success("📈 **Executive Lock:** MPJ (O24.5) + Jalen Duren (O11.5 REB) = +245 Estimated")
+    
+    st.write("---")
+    st.info("💡 **Selection Mode:** Click the player cards in 'The Board' to add them to your slip. (Logic integration in progress)")
