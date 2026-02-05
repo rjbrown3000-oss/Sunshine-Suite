@@ -1,25 +1,25 @@
-import streamlit as st
+9import streamlit as st
 import datetime
+import random
 from streamlit_autorefresh import st_autorefresh
 
-# 1. ANALYZER ENGINE SYNC
+# 1. ANALYZER SYNC
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=60000, key="executive_flicker")
+st_autorefresh(interval=60000, key="executive_sync_v126")
 
-# 2. THE UI BRAIN (NO BACKGROUND TOUCHED)
+# 2. THE BRAIN: LED & PROBABILITY UI
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
 
-    /* LED SCOREBOARD DISPLAY */
-    .led-display {
+    /* LED SCOREBOARD */
+    .led-board {
         background: #000;
         border-top: 2px solid #444;
         border-bottom: 2px solid #00ff00;
         padding: 10px 0;
         overflow: hidden;
         display: flex;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
     }
     .led-ticker {
         font-family: 'Orbitron', sans-serif;
@@ -27,19 +27,19 @@ st.markdown("""
         color: #00ff00;
         text-shadow: 0 0 8px #00ff00;
         font-size: 1.1rem;
-        animation: slide-left 40s linear infinite;
+        animation: slide-left 45s linear infinite;
     }
-    .status-pulse {
+    .led-dot {
         height: 10px; width: 10px; background-color: #ff0000;
         border-radius: 50%; display: inline-block;
-        margin: 0 10px; animation: pulse 1s infinite;
+        margin: 0 12px; animation: pulse 1s infinite;
     }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
     @keyframes slide-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
     /* RICKY'S NEON TITLE */
     .ricky-title {
-        font-family: 'Playball', cursive; font-size: 4.8rem; text-align: center;
+        font-family: 'Playball', cursive; font-size: 5rem; text-align: center;
         color: #fff; text-shadow: 0 0 20px #00ff00; animation: neon-flicker 4s infinite;
     }
     @keyframes neon-flicker {
@@ -47,77 +47,92 @@ st.markdown("""
         20%, 24%, 55% { opacity: 0.6; }
     }
 
-    /* TABS & SIDEBAR TEXT */
-    h1, h2, h3, b, p, span { color: white !important; text-shadow: 2px 2px 8px #000 !important; }
-    .prop-card {
-        background: rgba(0,0,0,0.65); border-left: 8px solid #00ff00;
-        padding: 15px; border-radius: 12px; margin-bottom: 12px;
+    /* PROBABILITY METERS */
+    .meter-bg {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        height: 12px;
+        width: 100%;
+        margin-top: 8px;
     }
+    .meter-fill {
+        background: linear-gradient(90deg, #00ff00, #adff2f);
+        height: 100%;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #00ff00;
+    }
+
+    /* CARD STYLING */
+    .prop-card {
+        background: rgba(0,0,0,0.7); 
+        border-left: 10px solid #00ff00;
+        padding: 20px; 
+        border-radius: 15px; 
+        margin-bottom: 15px;
+    }
+    h1, h2, h3, b, p, span { color: white !important; text-shadow: 2px 2px 10px #000 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. THE LED SCOREBOARD
+# 3. LED DISPLAY
 st.markdown(f"""
-<div class="led-display">
+<div class="led-board">
     <div class="led-ticker">
-        <span class="status-pulse"></span> FEB 5-6 INTEL: GIANNIS (OUT - CALF) <span class="status-pulse"></span> 
-        TRAE YOUNG (OUT - KNEE) <span class="status-pulse"></span> CUNNINGHAM (GTD) <span class="status-pulse"></span> 
-        MPJ OVER 24.5 [EDGE +2.3] <span class="status-pulse"></span> ⚡ LATE NIGHT TRANSITION: STANDBY
+        <span class="led-dot"></span> FEB 5-6: GIANNIS (OUT) <span class="led-dot"></span> 
+        TRAE YOUNG (OUT) <span class="led-dot"></span> CUNNINGHAM (GTD) <span class="led-dot"></span> 
+        PROBABILITY ENGINE: ONLINE <span class="led-dot"></span> 🏀 NIGHTOWL MODE STANDBY
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="ricky-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. THE SIDEBAR (INJURY REPORT & TOGGLES)
+# 4. SIDEBAR INJURY REPORT
 with st.sidebar:
-    st.markdown("## 📊 ANALYZER SETTINGS")
+    st.markdown("## 📊 INJURY REPORT")
+    st.error("**GIANNIS ANTETOKOUNMPO**\n\nOUT (Calf)")
+    st.error("**TRAE YOUNG**\n\nOUT (Knee)")
+    st.warning("**CADE CUNNINGHAM**\n\nGTD (Wrist)")
     st.write("---")
-    st.error("**GIANNIS ANTETOKOUNMPO**\n\nStatus: OUT (Right Calf)")
-    st.error("**TRAE YOUNG**\n\nStatus: OUT (Right Knee)")
-    st.warning("**CADE CUNNINGHAM**\n\nStatus: Questionable (Wrist)")
-    st.write("---")
-    night_mode = st.toggle("🌙 Force Nightowl Transition", value=False)
+    force_night = st.toggle("🌙 Manual Nightowl Swap")
 
-# 5. TABS & PROP ANALYZER
-tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PARLAY BUILDER"])
+# 5. TABS & ANALYZER
+tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PARLAYS"])
 
-# Nightowl Logic
 now = datetime.datetime.now()
-is_nightowl = (now.hour >= 22 or now.hour < 6) or night_mode
+is_night = (now.hour >= 22 or now.hour < 6) or force_night
 
 with tab1:
-    header = "🌙 Tomorrow's Early Props (Feb 6)" if is_nightowl else "🎯 Today's Live Projections"
-    st.subheader(header)
+    st.subheader("🌙 Nightowl Early Lines" if is_night else "🎯 Active Projections")
     
-    # Active Prop Data
-    active_props = [
-        {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "id": "1629008", "proj": 26.8},
-        {"name": "Kelly Oubre Jr.", "line": 14.5, "stat": "PTS", "id": "1626162", "proj": 15.9}
+    # Analyzer Data with Confidence/Probability
+    props = [
+        {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "id": "1629008", "proj": 27.2, "prob": 78},
+        {"name": "Kelly Oubre Jr.", "line": 14.5, "stat": "PTS", "id": "1626162", "proj": 16.1, "prob": 64},
+        {"name": "Jalen Duren", "line": 11.5, "stat": "REB", "id": "1631105", "proj": 13.8, "prob": 82}
     ]
-    
-    for p in active_props:
+
+    for p in props:
         edge = round(p['proj'] - p['line'], 1)
         st.markdown(f"""
         <div class="prop-card">
             <div style="display: flex; align-items: center;">
-                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{p['id']}.png" style="width:75px; margin-right:15px; border-radius:50%; border:1px solid #00ff00; background:#000;">
+                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{p['id']}.png" style="width:80px; margin-right:20px; border-radius:50%; border:2px solid #00ff00; background:#000;">
                 <div style="flex-grow:1;">
-                    <b>{p['name'].upper()}</b><br>
+                    <b style="font-size:1.4rem;">{p['name'].upper()}</b><br>
                     <span>{p['stat']} Line: {p['line']} | <span style="color:#00ff00;">Proj: {p['proj']}</span></span>
+                    <div class="meter-bg"><div class="meter-fill" style="width: {p['prob']}%;"></div></div>
+                    <small style="color:#00ff00;">{p['prob']}% Hit Probability</small>
                 </div>
-                <div style="text-align:right;">
-                    <b style="font-size:1.4rem; color:#00ff00;">+{edge}</b><br><small>EDGE</small>
+                <div style="text-align:right; min-width:80px;">
+                    <b style="font-size:1.8rem; color:#00ff00;">+{edge}</b><br><small>EDGE</small>
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
 with tab2:
-    st.subheader("📡 Live Rotation Feed")
-    st.write("• **Brooklyn Alert:** MPJ seeing increased volume in early shootarounds.")
-    st.write("• **Philadelphia Alert:** Kelly Oubre Jr. has hit 15+ PTS in 3 straight games.")
+    st.info("📡 **Live Intel:** Monitor Detroit rotations; Duren's rebounding edge has increased due to interior matchups.")
 
 with tab3:
-    st.subheader("📈 Executive Parlay Builder")
-    st.info("Select props from the board to calculate total odds. (Session State initialization in progress)")
+    st.success("📈 **Executive Lock:** MPJ (O24.5) + J
