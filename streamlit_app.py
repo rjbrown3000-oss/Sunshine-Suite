@@ -2,84 +2,132 @@ import streamlit as st
 import datetime
 from streamlit_autorefresh import st_autorefresh
 
-# 1. CORE SYNC & REFRESH (Keep flicker alive)
-st.set_page_config(page_title="Ricky's Basketball Suite", layout="wide")
-st_autorefresh(interval=60000, key="nightowl_refresh")
+# 1. PAGE SYNC
+st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
+st_autorefresh(interval=60000, key="executive_sync")
 
-# 2. THE STABLE BASKETBALL COURT THEME
+# 2. THE ANALYZER UI (STYLING ONLY - NO BACKGROUND CHANGES)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
 
-    [data-testid="stAppViewContainer"] {
-        background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), 
-        url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2669&auto=format&fit=crop');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
+    /* LED SCOREBOARD STYLING */
+    .led-container {
+        background: #000;
+        border-top: 2px solid #333;
+        border-bottom: 2px solid #00ff00;
+        padding: 8px 0;
+        overflow: hidden;
+        display: flex;
     }
-
-    /* RICKY'S NEON FLICKER */
-    .flicker-title {
-        font-family: 'Playball', cursive; font-size: 4.5rem; text-align: center;
-        color: #fff; text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00;
-        animation: blink 2.5s infinite;
-        margin-bottom: 10px;
+    .led-text {
+        font-family: 'Orbitron', sans-serif;
+        white-space: nowrap;
+        color: #00ff00;
+        text-shadow: 0 0 10px #00ff00;
+        font-size: 1.1rem;
+        animation: ticker 35s linear infinite;
     }
-    @keyframes blink { 
-        0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-        20%, 24%, 55% { opacity: 0.4; }
+    /* MINI ANIMATION: PULSING DOT */
+    .live-dot {
+        height: 10px; width: 10px; background-color: #ff0000;
+        border-radius: 50%; display: inline-block;
+        margin: 0 10px; animation: pulse 1s infinite;
     }
-
-    /* THE SCOREBOARD TICKER */
-    .ticker-wrap { width: 100%; background: rgba(0,0,0,0.95); border-bottom: 3px solid #00ff00; padding: 12px 0; overflow: hidden; }
-    .ticker { display: inline-block; white-space: nowrap; animation: ticker 45s linear infinite; color: #00ff00 !important; font-size: 1.2rem; font-weight: bold; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-    /* PROP CARDS */
-    .prop-card {
-        background: rgba(255, 255, 255, 0.05);
-        border-left: 10px solid #00ff00;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 15px;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.6);
+    /* FLICKER TITLE */
+    .flicker-title {
+        font-family: 'Playball', cursive; font-size: 4.5rem; text-align: center;
+        color: #fff; text-shadow: 0 0 20px #00ff00; animation: ricky-flicker 3s infinite;
     }
-    h1, h2, h3, b, p, span { color: white !important; text-shadow: 2px 2px 10px #000 !important; }
+    @keyframes ricky-flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+        20%, 22%, 24%, 55% { opacity: 0.6; }
+    }
+
+    /* PROP CARDS & TABS */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: rgba(255,255,255,0.05);
+        border-radius: 10px 10px 0 0;
+        padding: 10px 20px;
+        color: white;
+    }
+    .prop-card {
+        background: rgba(0,0,0,0.6);
+        border-left: 8px solid #00ff00;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+    h1, h2, h3, b, p, span { color: white !important; text-shadow: 2px 2px 8px #000 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. THE TICKER (FEB 5-6 UPDATES)
-st.markdown('<div class="ticker-wrap"><div class="ticker">🏀 FEB 5-6: GIANNIS (OUT - CALF) | TRAE YOUNG (OUT) | WAGNER (OUT) | CUNNINGHAM (GTD) | BRUNSON (ACTIVE - 27.2 PPG)</div></div>', unsafe_allow_html=True)
+# 3. LED SCOREBOARD (WITH ANIMATIONS)
+st.markdown(f"""
+<div class="led-container">
+    <div class="led-text">
+        <span class="live-dot"></span> FEB 5-6 ANALYTICS: GIANNIS (OUT) <span class="live-dot"></span> 
+        BRUNSON O/U 27.5 [HOT] <span class="live-dot"></span> 
+        LATE NIGHT TRANSITION: ACTIVE <span class="live-dot"></span> 
+        🔥 LOCK OF THE NIGHT: JALEN DUREN REBS 📈
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 st.markdown('<div class="flicker-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. NIGHTOWL LOGIC (AUTO-SWAP PROPS)
+# 4. SIDEBAR (INJURY REPORT)
+with st.sidebar:
+    st.markdown("## 📋 INJURY REPORT")
+    st.error("GIANNIS: OUT (CALF)")
+    st.error("TRAE YOUNG: OUT (KNEE)")
+    st.warning("CADE CUNNINGHAM: GTD")
+    st.write("---")
+    st.write("### 🌙 Nightowl Control")
+    nightowl_manual = st.toggle("Force Nightowl Mode", value=False)
+
+# 5. TABS & PROP ANALYZER
+tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PARLAY BUILDER"])
+
 now = datetime.datetime.now()
-is_nightowl = now.hour >= 22 or now.hour < 6
+is_night = (now.hour >= 22 or now.hour < 6) or nightowl_manual
 
-if is_nightowl:
-    st.success("🌙 **LATE NIGHT TRANSITION**: Today's games finalized. Loading Tomorrow's Early Props.")
-    # Tomorrow's Early Value (Feb 6)
-    props = {
-        "Michael Porter Jr.": ["24.5", "PTS", "BKN", "1629008"],
-        "Kelly Oubre Jr.": ["14.5", "PTS", "PHI", "1626162"]
-    }
-else:
-    st.info("📡 **LIVE BOARD**: Tracking today's active rotations.")
-    props = {
-        "Jalen Brunson": ["27.5", "PTS", "NYK", "1628973"],
-        "Jalen Duren": ["11.5", "REB", "DET", "1631105"]
-    }
-
-# 5. THE BOARD
-cols = st.columns(len(props))
-for i, (player, data) in enumerate(props.items()):
-    with cols[i]:
-        img = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{data[3]}.png"
+with tab1:
+    st.markdown(f"### {'🌙 Tomorrow\'s Early Value' if is_night else '🎯 Today\'s Live Board'}")
+    
+    # Analyzer Logic
+    props = [
+        {"name": "Jalen Brunson", "line": 27.5, "stat": "PTS", "id": "1628973", "proj": 29.8},
+        {"name": "Jalen Duren", "line": 11.5, "stat": "REB", "id": "1631105", "proj": 13.2}
+    ]
+    
+    for p in props:
+        diff = round(p['proj'] - p['line'], 1)
         st.markdown(f"""
         <div class="prop-card">
-            <img src="{img}" style="width:100px; border-radius:50%; border:2px solid #00ff00; background:#000;">
-            <h3>{player.upper()}</h3>
-            <b style="color:#00ff00; font-size:1.3rem;">{data[2]} | {data[1]}: Over {data[0]}</b>
+            <div style="display: flex; align-items: center;">
+                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{p['id']}.png" style="width:70px; margin-right:15px; border-radius:50%; border:1px solid #00ff00;">
+                <div style="flex-grow:1;">
+                    <b style="font-size:1.2rem;">{p['name']}</b><br>
+                    <span>{p['stat']} Line: {p['line']} | <span style="color:#00ff00;">Proj: {p['proj']}</span></span>
+                </div>
+                <div style="text-align:right;">
+                    <b style="font-size:1.5rem; color:#00ff00;">+{diff}</b><br>
+                    <small>EDGE</small>
+                </div>
+            </div>
         </div>
         """, unsafe_allow_html=True)
+
+with tab2:
+    st.markdown("### 📡 Live Analytics Feed")
+    st.write("• SGA usage spike expected with backup minutes shifting.")
+    st.write("• Detroit transition defense ranking bottom 5; monitor opposing PG speeds.")
+
+with tab3:
+    st.markdown("### 🔥 Parlay Builder")
+    st.info("Select props from the board to build your ticket (Feature integration pending).")
