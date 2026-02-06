@@ -1,13 +1,12 @@
 import streamlit as st
 import datetime
-import pandas as pd
 from streamlit_autorefresh import st_autorefresh
 
-# 1. CORE ENGINE
+# 1. ENGINE
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=30000, key="verified_thorough_v144")
+st_autorefresh(interval=30000, key="verified_sync_v145")
 
-# 2. UI STYLING (CURVED LED + CENTERING + LIGHT BG)
+# 2. UI STYLING (3D CURVED LED + NEON + LIGHT BG)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playball&family=Inter:wght@600;800&display=swap');
@@ -18,30 +17,29 @@ st.markdown("""
         background-size: cover; background-position: center; background-attachment: fixed;
     }
 
-    /* 3D CURVED SCOREBOARD EFFECT */
-    .curve-container {
-        perspective: 1000px;
-        overflow: hidden;
+    /* THE CURVED 3D SCOREBOARD */
+    .curve-outer {
+        perspective: 1200px;
         background: #000;
+        overflow: hidden;
         border-bottom: 3px solid #00ff00;
-        padding: 20px 0;
+        padding: 15px 0;
     }
     .curved-ticker {
         display: flex;
         white-space: nowrap;
-        animation: scroll-curve 35s linear infinite;
         font-family: 'Inter', sans-serif;
         color: #00ff00;
         font-weight: 800;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        animation: scroll-3d 30s linear infinite;
     }
-    @keyframes scroll-curve {
-        0% { transform: translateX(100%) rotateY(-20deg) scale(0.9); }
-        50% { transform: translateX(0%) rotateY(0deg) scale(1.2); text-shadow: 0 0 20px #00ff00; }
-        100% { transform: translateX(-100%) rotateY(20deg) scale(0.9); }
+    @keyframes scroll-3d {
+        0% { transform: translateX(100%) rotateY(-25deg) scale(0.85); opacity: 0.7; }
+        50% { transform: translateX(0%) rotateY(0deg) scale(1.2); opacity: 1; text-shadow: 0 0 20px #00ff00; }
+        100% { transform: translateX(-100%) rotateY(25deg) scale(0.85); opacity: 0.7; }
     }
 
-    /* CENTERED TABS & NEON */
     .stTabs [data-baseweb="tab-list"] { justify-content: center !important; gap: 20px; }
     .stTabs [data-baseweb="tab"] {
         background-color: rgba(20,20,20,0.95) !important;
@@ -51,21 +49,19 @@ st.markdown("""
         border: none !important;
     }
     .neon-sign {
-        font-family: 'Playball', cursive; font-size: 5.5rem; text-align: center;
-        color: #e0ffe0;
+        font-family: 'Playball', cursive; font-size: 5.5rem; text-align: center; color: #e0ffe0;
         text-shadow: 0 0 5px #fff, 0 0 15px rgba(0,255,0,0.4), 4px 4px 10px rgba(0,0,0,0.8);
         animation: neon-flicker 4s infinite;
     }
     @keyframes neon-flicker { 0%, 19%, 21%, 100% { opacity: 1; } 20% { opacity: 0.8; } }
-
     .prop-card { background: rgba(0,0,0,0.88); border-left: 10px solid #00ff00; padding: 18px; border-radius: 12px; margin-bottom: 12px; }
     h1, h2, h3, b, p, span, small { color: white !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. CURVED SCOREBOARD
+# 3. THE CURVED LED
 st.markdown("""
-<div class="curve-container">
+<div class="curve-outer">
     <div class="curved-ticker">
         ✅ FINAL: LAL 119-115 PHI | ✅ FINAL: GSW 101-97 PHX | ✅ FINAL: SAS 135-123 DAL | ✅ FINAL: WAS 126-117 DET | ✅ FINAL: CHA 109-99 HOU
         <span style="margin: 0 60px;"></span> 
@@ -76,7 +72,7 @@ st.markdown("""
 
 st.markdown('<div class="neon-sign">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. SIDEBAR (INJURY HUB - FEB 6 VERIFIED)
+# 4. SIDEBAR (THOROUGH INJURY SCRUB)
 with st.sidebar:
     if st.button("🔄 REFRESH LIVE DATA"):
         st.cache_data.clear()
@@ -86,26 +82,19 @@ with st.sidebar:
     
     st.write("---")
     st.markdown("## 🚨 INJURY HUB")
-    st.error("**GIANNIS ANTETOKOUNMPO** (OUT - Calf)")
-    st.error("**LUKA DONCIC** (OUT - Hamstring)")
-    st.error("**JAYSON TATUM** (OUT - Achilles)")
-    st.error("**TYRESE HALIBURTON** (OUT - Achilles)")
-    st.error("**DAMIAN LILLARD** (OUT - Achilles)")
-    st.error("**STEPHEN CURRY** (OUT - Knee)")
-    st.error("**MILES MCBRIDE** (OUT - Surgery)")
-    st.warning("**KAT** (Doubtful - Eye)")
-    st.warning("**JALEN BRUNSON** (GTD - Ankle)")
+    st.error("**GIANNIS** (OUT) | **LUKA** (OUT) | **TATUM** (OUT)")
+    st.error("**LILLARD** (OUT) | **HALIBURTON** (OUT) | **CURRY** (OUT)")
+    st.warning("**JOSH HART** (Q - Ankle) | **KAT** (Q - Eye)")
 
-# 5. THE BOARD (TAB 1 WITH ENHANCED SUGGESTIONS)
+# 5. THE BOARD (TAB 1 - UPDATED HART LINE)
 props = [
-    {"name": "Josh Hart", "line": 14.5, "stat": "P+R+A", "prob": 93, "logs": "15, 12, 18, 11, 14", "fatigue": "Low", "trend": "🔥 +12%", "usage": "+4.2%"},
-    {"name": "Bobby Portis", "line": 18.5, "stat": "PTS", "prob": 89, "logs": "22, 19, 17, 24, 20", "fatigue": "Med", "trend": "🔥 +25%", "usage": "+8.8%"},
-    {"name": "Jaylen Brown", "line": 28.5, "stat": "PTS", "prob": 87, "logs": "32, 28, 30, 24, 27", "fatigue": "Low", "trend": "🔥 +18%", "usage": "+6.4%"},
-    {"name": "Cade Cunningham", "line": 26.5, "stat": "PTS", "prob": 86, "logs": "30, 26, 29, 18, 22", "fatigue": "Med", "trend": "📈 +5%", "usage": "+1.1%"},
-    {"name": "Bam Adebayo", "line": 12.5, "stat": "REB", "prob": 82, "logs": "14, 11, 13, 9, 12", "fatigue": "Low", "trend": "📈 +4%", "usage": "+0.5%"},
+    {"name": "Josh Hart", "line": 24.5, "stat": "P+R+A", "prob": 91, "logs": "28, 26, 25, 20, 29", "trend": "🔥 +15%", "usage": "+11.2%"},
+    {"name": "Bobby Portis", "line": 18.5, "stat": "PTS", "prob": 89, "logs": "22, 19, 17, 24, 20", "trend": "🔥 +25%", "usage": "+8.8%"},
+    {"name": "Jaylen Brown", "line": 28.5, "stat": "PTS", "prob": 87, "logs": "32, 28, 30, 24, 27", "trend": "🔥 +18%", "usage": "+6.4%"},
+    {"name": "Cade Cunningham", "line": 26.5, "stat": "PTS", "prob": 86, "logs": "30, 26, 29, 18, 22", "trend": "📈 +5%", "usage": "+1.1%"},
 ]
 
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "🎰 PP BUILDER", "📈 ANALYTICS"])
+tab1, tab2, tab3, tab4 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "🎰 PP BUILDER", "📊 ANALYTICS"])
 
 with tab1:
     for p in props:
@@ -115,23 +104,14 @@ with tab1:
             <div class="prop-card">
                 <b style="font-size:1.2rem;">{p['name'].upper()}</b> <span style="color:#00ff00; float:right;">{p['trend']}</span><br>
                 <span>{p['stat']} Line: {p['line']}</span><br>
-                <small style="color:#aaa;">Usage Spike: {p['usage']} | Fatigue: {p['fatigue']}</small>
+                <small style="color:#aaa;">Usage Spike: {p['usage']} | Prob: {p['prob']}%</small>
                 <div style="background:rgba(255,255,255,0.1); border-radius:8px; height:8px; margin:8px 0;">
                     <div style="background:#00ff00; width:{p['prob']}%; height:100%; border-radius:8px;"></div>
                 </div>
-                <div style="font-size:0.8rem; color:#888;">L5 Logs: {p['logs']}</div>
             </div>
             """, unsafe_allow_html=True)
         with col2: st.code(f"{p['name']} O{p['line']} {p['stat']}")
 
-with tab3:
-    st.subheader("🎰 Correlation Parlay Builder")
-    selected = st.multiselect("Select Leg:", [p['name'] for p in props])
-    if selected:
-        st.write("🔄 **Correlation Check:** No negative correlations found. These plays stack well.")
-        st.button("Copy Slip to Clipboard")
-
 with tab4:
     st.subheader("📊 Unit Tracking & Bankroll")
-    st.number_input("Starting Bankroll ($):", value=1000)
-    st.info("Your recommended 1 Unit play: **$20.00** (2% risk)")
+    st.metric("Recommended Unit Size", "$20.00", delta="+2.5% vs Yesterday")
