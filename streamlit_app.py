@@ -1,50 +1,89 @@
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import time
+import streamlit as st
+import datetime
+from streamlit_autorefresh import st_autorefresh
 
-def scrape_prizepicks():
-    # 1. Initialize Stealth Driver
-    options = uc.ChromeOptions()
-    # options.add_argument('--headless') # Uncomment to run in background
-    driver = uc.Chrome(options=options)
-    
-    try:
-        driver.get("https://app.prizepicks.com/")
-        
-        # 2. Close Initial Popups
-        wait = WebDriverWait(driver, 15)
-        close_btn = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "close")))
-        close_btn.click()
-        
-        # 3. Select NBA Category
-        nba_tab = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='name'][normalize-space()='NBA']")))
-        nba_tab.click()
-        time.sleep(2) # Give board time to load
+# 1. CORE ENGINE
+st.set_page_config(page_title="Ricky's Shadow Suite v150", layout="wide")
+st_autorefresh(interval=30000, key="stadium_sync_v150")
 
-        # 4. Target All Player Cards
-        # This XPath finds every player tile on the board
-        player_cards = driver.find_elements(By.XPATH, "//div[@id='projections']//div[contains(@class, 'projection-card')]")
-        
-        all_props = []
-        for index, card in enumerate(player_cards):
-            name = card.find_element(By.XPATH, ".//div[@class='name']").text
-            line = card.find_element(By.XPATH, ".//div[@class='presale-score']").text
-            stat = card.find_element(By.XPATH, ".//div[@class='text']").text
-            
-            # Hit Rate Formula Logic (Example: Over 54.25% required)
-            # You would integrate your formula engine here
-            
-            all_props.append({"rank": index + 1, "name": name, "line": line, "stat": stat})
+# 2. UI STYLING (STADIUM PERSPECTIVE + COURT BG)
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playball&family=Inter:wght@900&display=swap');
 
-        # 🎯 SPECIFIC FOCUS: LINE 10
-        line_10 = all_props[9] if len(all_props) >= 10 else None
-        return all_props, line_10
+    /* COURT BACKGROUND - FIXED & ANCHORED */
+    [data-testid="stAppViewContainer"] {
+        background-image: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0.2)), 
+        url('https://images.unsplash.com/photo-1544919982-b61976f0ba43?q=80&w=2622&auto=format&fit=crop');
+        background-size: cover; background-position: center; background-attachment: fixed;
+    }
 
-    finally:
-        driver.quit()
+    /* 3D CYLINDRICAL STADIUM SCOREBOARD */
+    .stadium-wrapper {
+        perspective: 1000px;
+        overflow: hidden;
+        background: #000;
+        border-bottom: 5px solid #00ff00;
+        padding: 15px 0;
+    }
+    .stadium-ticker {
+        display: flex;
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+        color: #00ff00;
+        font-weight: 900;
+        font-size: 1.6rem;
+        animation: stadium-spin 25s linear infinite;
+        transform-style: preserve-3d;
+    }
+    @keyframes stadium-spin {
+        0% { transform: rotateY(-15deg) translateX(100%); }
+        50% { transform: rotateY(0deg) translateX(0%); filter: drop-shadow(0 0 10px #00ff00); }
+        100% { transform: rotateY(15deg) translateX(-100%); }
+    }
 
-# Run the scrape
-props, target = scrape_prizepicks()
-print(f"Scanned {len(props)} props. Target Line 10: {target}")
+    .stTabs [data-baseweb="tab"] { background-color: rgba(10,10,10,0.95) !important; color: white !important; }
+    .prop-card { background: rgba(0,0,0,0.92); border-left: 10px solid #00ff00; padding: 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: 4px 4px 10px rgba(0,0,0,0.5); }
+    .vegas-pill { background: #111; color: #00ff00; padding: 4px 8px; border-radius: 5px; font-size: 0.8rem; border: 1px solid #00ff00; }
+</style>
+""", unsafe_allow_html=True)
+
+# 3. THE STADIUM SCOREBOARD (TODAY'S GAMES ONLY - FEB 6)
+st.markdown("""
+<div class="stadium-wrapper">
+    <div class="stadium-ticker">
+        🏀 NYK @ DET (4:30) | 🏀 MIA @ BOS (4:30) | 🏀 IND @ MIL (5:00) | 🏀 NOP @ MIN (5:00) | 🏀 MEM @ POR (7:00) | 🏀 LAC @ SAC (7:00)
+        <span style="margin: 0 50px;"></span>
+        🚨 LINE ALERT: JOSH HART BUMPED TO 24.5 PRA | 🚨 LINE ALERT: BOBBY PORTIS BUMPED TO 18.5 PTS
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div style="font-family:\'Playball\'; font-size:5.5rem; text-align:center; color:#e0ffe0; text-shadow: 0 0 10px #00ff00; margin-top:20px;">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
+
+# 4. PLAYER DATA WITH VEGAS PROBABILITY
+# Selenium would populate this list
+props = [
+    {"name": "Josh Hart", "line": 24.5, "stat": "P+R+A", "vegas_prob": "56.4%", "diff": "+1.0", "hit": 91},
+    {"name": "Bobby Portis", "line": 18.5, "stat": "PTS", "vegas_prob": "58.2%", "diff": "+2.0", "hit": 89},
+    {"name": "Jaylen Brown", "line": 28.5, "stat": "PTS", "vegas_prob": "54.8%", "diff": "+1.0", "hit": 87},
+    {"name": "Cade Cunningham", "line": 26.5, "stat": "PTS", "vegas_prob": "51.2%", "diff": "0.0", "hit": 86},
+]
+
+tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LINE CHANGES", "🎰 PP BUILDER"])
+
+with tab1:
+    for p in props:
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(f"""
+            <div class="prop-card">
+                <b style="font-size:1.4rem;">{p['name'].upper()}</b> 
+                <span style="float:right;" class="vegas-pill">Vegas Implied: {p['vegas_prob']}</span><br>
+                <span style="color:#aaa;">{p['stat']} Line: {p['line']}</span><br>
+                <small style="color:#00ff00;">Shadow Hit Rate: {p['hit']}%</small>
+            </div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.code(f"BUMP: {p['diff']}")
+            st.button(f"Copy {p['name']}", key=p['name'])
