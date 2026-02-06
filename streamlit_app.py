@@ -1,104 +1,112 @@
 import streamlit as st
-import datetime
 from streamlit_autorefresh import st_autorefresh
 
-# 1. CORE ENGINE - 30s REFRESH FOR TRUE LIVE SYNC
+# 1. CORE ENGINE
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=30000, key="nightowl_verified_v138")
+st_autorefresh(interval=30000, key="neon_refreshed_v139")
 
-# 2. UI STYLING (LOCKED COURT)
+# 2. UI STYLING (LIGHTENED BG + NEON SIGN + MODERN TICKER)
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playball&family=Inter:wght@700&family=Montserrat:wght@800&display=swap');
+
+    /* LIGHTENED BACKGROUND OVERLAY */
     [data-testid="stAppViewContainer"] {
-        background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+        background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
         url('https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2669&auto=format&fit=crop');
         background-size: cover; background-position: center; background-attachment: fixed;
     }
-    .led-ticker { background: #000; border-bottom: 3px solid #00ff00; padding: 12px 0; color: #00ff00; font-family: 'Orbitron'; overflow: hidden; white-space: nowrap; }
-    .ticker-content { display: inline-block; animation: ticker-scroll 60s linear infinite; }
+
+    /* MODERN TICKER - INTER FONT + FASTER RESPONSE */
+    .led-ticker {
+        background: #000; border-bottom: 3px solid #00ff00; padding: 10px 0;
+        color: #00ff00; font-family: 'Inter', sans-serif; overflow: hidden; white-space: nowrap;
+        cursor: pointer; transition: opacity 0.1s;
+    }
+    .led-ticker:active { opacity: 0.7; transform: scale(0.99); }
+    .ticker-content { display: inline-block; animation: ticker-scroll 45s linear infinite; }
     @keyframes ticker-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-    .ricky-title { font-family: 'Playball', cursive; font-size: 4.8rem; text-align: center; color: #fff; text-shadow: 0 0 20px #00ff00; margin-top:15px; }
-    .prop-card { background: rgba(0,0,0,0.9); border-left: 10px solid #00ff00; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 1px solid #333; }
+
+    /* RICKY'S NEON SIGN WITH DROP SHADOWS */
+    .neon-sign {
+        font-family: 'Playball', cursive; font-size: 5rem; text-align: center;
+        color: #fff;
+        text-shadow: 
+            0 0 5px #fff, 0 0 10px #fff, 
+            0 0 20px #00ff00, 0 0 30px #00ff00, 
+            0 0 40px #00ff00, 4px 4px 8px rgba(0,0,0,0.8);
+        animation: neon-flicker 3s infinite;
+        margin-top: 20px;
+    }
+    @keyframes neon-flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+        20%, 22%, 24%, 55% { opacity: 0.8; }
+    }
+
+    .prop-card { background: rgba(0,0,0,0.8); border-left: 10px solid #00ff00; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
     .meter-bg { background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; margin: 5px 0; }
     .meter-fill { background: #00ff00; height: 100%; border-radius: 8px; box-shadow: 0 0 10px #00ff00; }
     h1, h2, h3, b, p, span { color: white !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. VERIFIED SCOREBOARD (ALL THURSDAY GAMES FINAL)
+# 3. SCOREBOARD (MODERN FONT)
 st.markdown(f"""
 <div class="led-ticker">
     <div class="ticker-content">
-        ✅ FINAL: LAL 119-115 PHI | ✅ FINAL: GSW 101-97 PHX | ✅ FINAL: SAS 135-123 DAL | ✅ FINAL: HOU 99-109 CHA | ✅ FINAL: ATL 121-119 UTA | ✅ FINAL: TOR 123-107 CHI | ✅ FINAL: WAS 126-117 DET 
+        ✅ FINAL: LAL 119-115 PHI | ✅ FINAL: GSW 101-97 PHX | ✅ FINAL: SAS 135-123 DAL | ✅ FINAL: HOU 99-109 CHA 
         <span style="margin: 0 40px;"></span> 
-        📅 FRIDAY: NYK @ DET (4:30 PM) | MIA @ BOS (4:30 PM) | IND @ MIL (5:00 PM) | PHI @ ORL (5:00 PM)
+        📅 NEXT: NYK @ DET (4:30 PM) | MIA @ BOS (4:30 PM) | IND @ MIL (5:00 PM)
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="ricky-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
+st.markdown('<div class="neon-sign">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. SIDEBAR: THE ENGINE ROOM
+# 4. SIDEBAR (INJURY LIST & REFRESH)
 with st.sidebar:
-    st.subheader("⚙️ EXECUTIVE CONTROLS")
     if st.button("🔄 REFRESH LIVE DATA"):
         st.cache_data.clear()
-        st.toast("Clearing Cache... Fetching Friday Openers.")
         st.rerun()
     st.write("---")
     st.markdown("## 📋 INJURY HUB")
-    st.info("**KNICKS:** NEXT @ DET (FEB 6)")
-    st.error("**MILES MCBRIDE** (OUT - SURGERY FRI)")
-    st.error("**JALEN BRUNSON** (Q - Ankle/Rest)")
-    st.warning("**JOSH HART** (Active - Massive Usage)")
+    st.error("**TYRESE HALIBURTON** (OUT - Hamstring)")
+    st.error("**JAYSON TATUM** (OUT - Knee)")
+    st.error("**MILES MCBRIDE** (OUT - Surgery)")
+    st.warning("**JALEN BRUNSON** (Q - Ankle)")
 
-# 5. THE BOARD: FRIDAY OPENERS (THOROUGHLY VETTED)
-# Wednesday's props removed; Friday lines added
-friday_props = [
-    {"name": "Josh Hart", "line": 13.5, "stat": "PTS+REB+AST", "prob": 93, "tier": "High Value"},
+# 5. DATA LOAD (INJURY-FREE BOARD)
+props = [
+    {"name": "Josh Hart", "line": 13.5, "stat": "P+R+A", "prob": 93, "tier": "High Value"},
     {"name": "Karl-Anthony Towns", "line": 11.5, "stat": "REB", "prob": 89, "tier": "High Value"},
     {"name": "Mikal Bridges", "line": 3.5, "stat": "3PM", "prob": 86, "tier": "High Value"},
-    {"name": "Bam Adebayo", "line": 10.5, "stat": "REB", "prob": 84, "tier": "Medium"},
-    {"name": "Pascal Siakam", "line": 22.5, "stat": "PTS", "prob": 81, "tier": "Medium"},
-    {"name": "Cade Cunningham", "line": 8.5, "stat": "AST", "prob": 79, "tier": "Medium"},
-    {"name": "Tyrese Haliburton", "line": 10.5, "stat": "AST", "prob": 77, "tier": "Value"},
-    {"name": "Jayson Tatum", "line": 28.5, "stat": "PTS", "prob": 74, "tier": "Value"},
-    {"name": "OG Anunoby", "line": 1.5, "stat": "STL+BLK", "prob": 71, "tier": "Value"},
-    {"name": "Jose Alvarado", "line": 5.5, "stat": "AST", "prob": 68, "tier": "Value"}
+    {"name": "Cade Cunningham", "line": 8.5, "stat": "AST", "prob": 82, "tier": "Medium"},
+    {"name": "Bam Adebayo", "line": 10.5, "stat": "REB", "prob": 80, "tier": "Medium"},
+    {"name": "Damian Lillard", "line": 26.5, "stat": "PTS", "prob": 78, "tier": "Medium"},
+    {"name": "Anfernee Simons", "line": 4.5, "stat": "AST", "prob": 75, "tier": "Value"},
+    {"name": "OG Anunoby", "line": 1.5, "stat": "S+B", "prob": 72, "tier": "Value"}
 ]
 
 tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "🎰 PP BUILDER"])
 
 with tab1:
-    for p in friday_props:
+    for p in props:
         col1, col2 = st.columns([4, 1])
         with col1:
-            st.markdown(f"""
-            <div class="prop-card">
-                <b>{p['name'].upper()}</b> ({p['tier']})<br>
-                <span>{p['stat']} Line: {p['line']}</span>
-                <div class="meter-bg"><div class="meter-fill" style="width: {p['prob']}%;"></div></div>
-                <small style="color:#00ff00;">Hit Rate: {p['prob']}%</small>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div class="prop-card"><b>{p['name'].upper()}</b> ({p['tier']})<br><span>{p['stat']} Line: {p['line']}</span><div class="meter-bg"><div class="meter-fill" style="width: {p['prob']}%;"></div></div><small style="color:#00ff00;">Hit Rate: {p['prob']}%</small></div>""", unsafe_allow_html=True)
         with col2:
             st.code(f"{p['name']} O{p['line']} {p['stat']}", language="text")
 
 with tab2:
-    st.subheader("📡 Post-Game Analysis & Friday Intel")
-    st.success("✅ **Thursday Recap:** Wemby (29/11) and Cooper Flagg (32 PTS) hit lines easily in SAS win over DAL.")
-    st.info("🚨 **Friday Breaking:** Miles McBride is undergoing core surgery tomorrow. This locks **Josh Hart** into 40+ minutes against Detroit.")
-    st.warning("⚠️ **Pistons Note:** Cade Cunningham is available for tomorrow; Tobias Harris is likely OUT (Hip).")
+    st.subheader("📡 Rotation Analysis")
+    st.info("🚨 **BOS Update:** With Tatum OUT, expect Jaylen Brown and Derrick White usage to spike to 35% and 24% respectively.")
+    st.info("🚨 **IND Update:** Haliburton's absence puts the ball entirely in Siakam's hands for playmaking.")
 
 with tab3:
-    st.subheader("🎰 PrizePicks Parlay Simulator")
-    selected = st.multiselect("Select Friday Props:", [p['name'] for p in friday_props])
+    selected = st.multiselect("Build Your Slip:", [p['name'] for p in props])
     if selected:
-        total_p = 1.0
+        prob = 100
         for s in selected:
-            p_data = next(item for item in friday_props if item["name"] == s)
-            total_p *= (p_data['prob'] / 100)
-            st.write(f"✅ {s}: {p_data['prob']}%")
-        st.metric("Total Slip Probability", f"{round(total_p * 100, 2)}%")
-        st.code(" + ".join(selected), language="text")
+            p_data = next(item for item in props if item["name"] == s)
+            prob *= (p_data['prob'] / 100)
+        st.metric("Slip Probability", f"{round(prob, 2)}%")
