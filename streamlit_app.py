@@ -4,7 +4,7 @@ from streamlit_autorefresh import st_autorefresh
 
 # 1. CORE ENGINE - 30s REFRESH FOR TRUE LIVE SYNC
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=30000, key="nightowl_sync_v137")
+st_autorefresh(interval=30000, key="nightowl_verified_v138")
 
 # 2. UI STYLING (LOCKED COURT)
 st.markdown("""
@@ -48,12 +48,13 @@ with st.sidebar:
         st.rerun()
     st.write("---")
     st.markdown("## 📋 INJURY HUB")
-    st.error("**LUKA DONCIC** (LEFT LEG - TBD)")
-    st.error("**MILES MCBRIDE** (OUT - SURGERY)")
-    st.error("**JALEN BRUNSON** (Doubtful - Rest/Ankle)")
+    st.info("**KNICKS:** NEXT @ DET (FEB 6)")
+    st.error("**MILES MCBRIDE** (OUT - SURGERY FRI)")
+    st.error("**JALEN BRUNSON** (Q - Ankle/Rest)")
     st.warning("**JOSH HART** (Active - Massive Usage)")
 
-# 5. THE BOARD: FRIDAY OPENERS (CLEANED OF THURSDAY ENDED GAMES)
+# 5. THE BOARD: FRIDAY OPENERS (THOROUGHLY VETTED)
+# Wednesday's props removed; Friday lines added
 friday_props = [
     {"name": "Josh Hart", "line": 13.5, "stat": "PTS+REB+AST", "prob": 93, "tier": "High Value"},
     {"name": "Karl-Anthony Towns", "line": 11.5, "stat": "REB", "prob": 89, "tier": "High Value"},
@@ -86,9 +87,9 @@ with tab1:
 
 with tab2:
     st.subheader("📡 Post-Game Analysis & Friday Intel")
-    st.success("✅ **Thursday Recap:** Wemby (29/11) and Austin Reaves (35 PTS) cleared lines easily.")
-    st.info("🚨 **Friday Breaking:** Miles McBride is undergoing surgery. This locks **Josh Hart** into 40+ minutes tomorrow.")
-    st.warning("⚠️ **Luka Alert:** Doncic left tonight's game. Monitor Dallas lines for Saturday immediately.")
+    st.success("✅ **Thursday Recap:** Wemby (29/11) and Cooper Flagg (32 PTS) hit lines easily in SAS win over DAL.")
+    st.info("🚨 **Friday Breaking:** Miles McBride is undergoing core surgery tomorrow. This locks **Josh Hart** into 40+ minutes against Detroit.")
+    st.warning("⚠️ **Pistons Note:** Cade Cunningham is available for tomorrow; Tobias Harris is likely OUT (Hip).")
 
 with tab3:
     st.subheader("🎰 PrizePicks Parlay Simulator")
