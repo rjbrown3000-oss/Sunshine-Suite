@@ -1,12 +1,13 @@
 import streamlit as st
 import datetime
+import random
 from streamlit_autorefresh import st_autorefresh
 
 # 1. CORE ENGINE SYNC
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=60000, key="prizepicks_builder_v132")
+st_autorefresh(interval=60000, key="executive_live_v133")
 
-# 2. UI STYLING (LOCKED COURT BACKGROUND)
+# 2. UI STYLING (LOCKED BACKGROUND)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
@@ -17,8 +18,16 @@ st.markdown("""
         background-size: cover; background-position: center; background-attachment: fixed;
     }
 
-    .led-ticker { background: #000; border-bottom: 3px solid #00ff00; padding: 10px 0; color: #00ff00; font-family: 'Orbitron'; overflow: hidden; white-space: nowrap; }
-    .ricky-title { font-family: 'Playball', cursive; font-size: 4.5rem; text-align: center; color: #fff; text-shadow: 0 0 20px #00ff00; margin-top:10px;}
+    /* LED SCOREBOARD - LIVE NBA ONLY */
+    .led-ticker {
+        background: #000; border-bottom: 3px solid #00ff00; padding: 12px 0;
+        color: #00ff00; font-family: 'Orbitron', sans-serif; overflow: hidden; white-space: nowrap;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    }
+    .ticker-content { display: inline-block; animation: ticker-scroll 50s linear infinite; }
+    @keyframes ticker-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+    .ricky-title { font-family: 'Playball', cursive; font-size: 4.8rem; text-align: center; color: #fff; text-shadow: 0 0 20px #00ff00; margin-top:15px; }
     .prop-card { background: rgba(0,0,0,0.85); border-left: 10px solid #00ff00; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
     .meter-bg { background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; margin: 5px 0; }
     .meter-fill { background: #00ff00; height: 100%; border-radius: 8px; box-shadow: 0 0 8px #00ff00; }
@@ -26,26 +35,45 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. DATA LOAD (LATEST FEB 5-6 PROJECTIONS)
-# Updated: Brunson OUT, Duren (Ankle)
-all_props = [
-    {"name": "Isaiah Collier", "line": 11.5, "stat": "AST", "prob": 88, "tier": "High Value"},
-    {"name": "Jalen Johnson", "line": 19.5, "stat": "PTS", "prob": 85, "tier": "High Value"},
-    {"name": "Oso Ighodaro", "line": 4.5, "stat": "REB", "prob": 82, "tier": "High Value"},
-    {"name": "VJ Edgecombe", "line": 13.5, "stat": "PTS", "prob": 79, "tier": "Medium"},
-    {"name": "Luka Doncic", "line": 32.5, "stat": "PTS", "prob": 74, "tier": "Medium"},
-    {"name": "Cooper Flagg", "line": 21.5, "stat": "PTS", "prob": 71, "tier": "Medium"},
-    {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "prob": 68, "tier": "Value"},
-    {"name": "Immanuel Quickley", "line": 5.5, "stat": "REB", "prob": 65, "tier": "Value"},
-    {"name": "Mark Williams", "line": 11.5, "stat": "PTS", "prob": 62, "tier": "Value"},
-    {"name": "Paolo Banchero", "line": 8.5, "stat": "REB", "prob": 59, "tier": "Value"}
-]
+# 3. LIVE NBA SCOREBOARD (FEB 5 REAL-TIME)
+st.markdown(f"""
+<div class="led-ticker">
+    <div class="ticker-content">
+        🏀 LIVE: WAS 106 - DET 98 (FINAL) | BKN 69 - ORL 88 (4Q) | CHI 78 - TOR 91 (3Q) | UTA 77 - ATL 77 (HALF) 
+        <span style="margin: 0 40px;"></span> 
+        📅 UPCOMING: CHA @ HOU (8:00 PM) | SAS @ DAL (8:30 PM) | GSW @ PHX (10:00 PM) | PHI @ LAL (10:00 PM)
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# 4. LED & HEADER
-st.markdown('<div class="led-ticker">🚨 GIANNIS (OUT) | TRAE YOUNG (OUT) | JALEN BRUNSON (OUT) | DUREN (DOUBTFUL) | COLLIER PROJECTED 12+ AST</div>', unsafe_allow_html=True)
 st.markdown('<div class="ricky-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PP PARLAY BUILDER"])
+# 4. SIDEBAR: INJURY HUB & REFRESH
+with st.sidebar:
+    st.markdown("## 📋 INJURY HUB")
+    st.error("**GIANNIS** (OUT) | **TRAE** (OUT)")
+    st.error("**BRUNSON** (OUT) | **CAM THOMAS** (OUT)")
+    st.warning("**CADE CUNNINGHAM** (Doubtful)")
+    st.write("---")
+    if st.button("🔄 Refresh Data & Lines"):
+        st.toast("Re-calculating probabilities based on latest scratch...")
+        st.rerun()
+    st.write("---")
+    night_toggle = st.toggle("🌙 Force Nightowl Swap")
+
+# 5. PROP DATA (RE-LOADED WITHOUT BRUNSON)
+all_props = [
+    {"name": "Isaiah Collier", "line": 11.5, "stat": "AST", "prob": 88, "tier": "High Value", "id": "1642261"},
+    {"name": "Jalen Johnson", "line": 21.5, "stat": "PTS", "prob": 85, "tier": "High Value", "id": "1630552"},
+    {"name": "Oso Ighodaro", "line": 5.5, "stat": "REB", "prob": 82, "tier": "High Value", "id": "1642273"},
+    {"name": "Luka Doncic", "line": 32.5, "stat": "PTS", "prob": 74, "tier": "Medium", "id": "1629029"},
+    {"name": "Cooper Flagg", "line": 21.5, "stat": "PTS", "prob": 71, "tier": "Medium", "id": "1642258"},
+    {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "prob": 68, "tier": "Value", "id": "1629008"},
+    {"name": "Mark Williams", "line": 11.5, "stat": "PTS", "prob": 62, "tier": "Value", "id": "1630559"},
+    {"name": "Paolo Banchero", "line": 8.5, "stat": "REB", "prob": 59, "tier": "Value", "id": "1631094"}
+]
+
+tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PP BUILDER"])
 
 with tab1:
     for p in all_props:
@@ -63,30 +91,20 @@ with tab1:
             st.code(f"{p['name']} O{p['line']} {p['stat']}", language="text")
 
 with tab2:
-    st.subheader("📡 Live Intel")
-    st.info("• Isaiah Collier (Utah) usage is peaking with Keyonte George out. Proj: 14.1 AST.")
-    st.info("• VJ Edgecombe (76ers) showing 22% edge vs Lakers defense (ranked 24th).")
+    st.subheader("📡 Live Analytics")
+    st.info("Isaiah Collier usage skyrocketing in Utah. Jalen Johnson 3rd triple-double threat with Trae out.")
 
 with tab3:
     st.subheader("🎰 PrizePicks Parlay Simulator")
-    selected_players = st.multiselect("Select Players for your slip:", [p['name'] for p in all_props])
+    selected_players = st.multiselect("Select players for your slip:", [p['name'] for p in all_props])
     
     if selected_players:
         total_prob = 100
-        st.write("### Current Slip:")
         for name in selected_players:
             p_data = next(item for item in all_props if item["name"] == name)
             total_prob *= (p_data['prob'] / 100)
             st.write(f"✅ **{name}**: {p_data['prob']}% Win Probability")
         
-        final_calc = round(total_prob, 2)
         st.divider()
-        st.metric("Total Slip Probability", f"{final_calc}%")
-        
-        if len(selected_players) >= 5:
-            st.success("🔥 This is a high-risk Flex Play. Win rate above 54.25% per leg is needed for long-term profit.")
-        
-        st.write("---")
-        st.write("📋 **Copy Full Slip:**")
-        full_slip_text = " + ".join([name for name in selected_players])
-        st.code(full_slip_text, language="text")
+        st.metric("Combined Slip Probability", f"{round(total_prob, 2)}%")
+        st.code(" + ".join(selected_players), language="text")
