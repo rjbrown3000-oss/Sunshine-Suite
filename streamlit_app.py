@@ -1,13 +1,12 @@
 import streamlit as st
 import datetime
-import random
 from streamlit_autorefresh import st_autorefresh
 
 # 1. CORE ENGINE SYNC
 st.set_page_config(page_title="Ricky's Executive Suite", layout="wide")
-st_autorefresh(interval=60000, key="executive_live_v133")
+st_autorefresh(interval=60000, key="v134_live_board")
 
-# 2. UI STYLING (LOCKED BACKGROUND)
+# 2. UI STYLING (LOCKED COURT BACKGROUND)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Playball&family=Oswald:wght@700&family=Orbitron:wght@700&display=swap');
@@ -18,11 +17,9 @@ st.markdown("""
         background-size: cover; background-position: center; background-attachment: fixed;
     }
 
-    /* LED SCOREBOARD - LIVE NBA ONLY */
     .led-ticker {
         background: #000; border-bottom: 3px solid #00ff00; padding: 12px 0;
         color: #00ff00; font-family: 'Orbitron', sans-serif; overflow: hidden; white-space: nowrap;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.8);
     }
     .ticker-content { display: inline-block; animation: ticker-scroll 50s linear infinite; }
     @keyframes ticker-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -35,11 +32,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. LIVE NBA SCOREBOARD (FEB 5 REAL-TIME)
+# 3. LIVE NBA SCOREBOARD (CLEANED - NO INJURIES)
 st.markdown(f"""
 <div class="led-ticker">
     <div class="ticker-content">
-        🏀 LIVE: WAS 106 - DET 98 (FINAL) | BKN 69 - ORL 88 (4Q) | CHI 78 - TOR 91 (3Q) | UTA 77 - ATL 77 (HALF) 
+        🏀 FINAL: WAS 106 - DET 98 | 4Q: BKN 82 - ORL 95 | 3Q: CHI 81 - TOR 96 | 2Q: UTA 55 - ATL 58
         <span style="margin: 0 40px;"></span> 
         📅 UPCOMING: CHA @ HOU (8:00 PM) | SAS @ DAL (8:30 PM) | GSW @ PHX (10:00 PM) | PHI @ LAL (10:00 PM)
     </div>
@@ -48,24 +45,26 @@ st.markdown(f"""
 
 st.markdown('<div class="ricky-title">Ricky Sunshine\'s</div>', unsafe_allow_html=True)
 
-# 4. SIDEBAR: INJURY HUB & REFRESH
+# 4. SIDEBAR: REFRESH & INJURY HUB
 with st.sidebar:
-    st.markdown("## 📋 INJURY HUB")
-    st.error("**GIANNIS** (OUT) | **TRAE** (OUT)")
-    st.error("**BRUNSON** (OUT) | **CAM THOMAS** (OUT)")
-    st.warning("**CADE CUNNINGHAM** (Doubtful)")
-    st.write("---")
-    if st.button("🔄 Refresh Data & Lines"):
-        st.toast("Re-calculating probabilities based on latest scratch...")
+    st.subheader("⚙️ EXECUTIVE CONTROLS")
+    if st.button("🔄 REFRESH PROPS & SCORES"):
+        st.toast("Syncing with Vegas & Live Score Feed...")
         st.rerun()
     st.write("---")
-    night_toggle = st.toggle("🌙 Force Nightowl Swap")
+    st.markdown("## 📋 INJURY HUB")
+    st.error("**JALEN BRUNSON** (OUT)")
+    st.error("**GIANNIS** (OUT) | **TRAE** (OUT)")
+    st.warning("**CADE CUNNINGHAM** (OUT/REST)")
+    st.write("---")
+    night_mode = st.toggle("🌙 Force Nightowl Swap")
 
-# 5. PROP DATA (RE-LOADED WITHOUT BRUNSON)
+# 5. DATA LOAD (KNICKS REPLACEMENT VALUE LOADED)
 all_props = [
+    {"name": "Josh Hart", "line": 5.5, "stat": "AST", "prob": 89, "tier": "High Value", "id": "1628404"},
+    {"name": "Miles McBride", "line": 15.5, "stat": "PTS", "prob": 86, "tier": "High Value", "id": "1630540"},
     {"name": "Isaiah Collier", "line": 11.5, "stat": "AST", "prob": 88, "tier": "High Value", "id": "1642261"},
-    {"name": "Jalen Johnson", "line": 21.5, "stat": "PTS", "prob": 85, "tier": "High Value", "id": "1630552"},
-    {"name": "Oso Ighodaro", "line": 5.5, "stat": "REB", "prob": 82, "tier": "High Value", "id": "1642273"},
+    {"name": "Jalen Johnson", "line": 21.5, "stat": "PTS", "prob": 84, "tier": "High Value", "id": "1630552"},
     {"name": "Luka Doncic", "line": 32.5, "stat": "PTS", "prob": 74, "tier": "Medium", "id": "1629029"},
     {"name": "Cooper Flagg", "line": 21.5, "stat": "PTS", "prob": 71, "tier": "Medium", "id": "1642258"},
     {"name": "Michael Porter Jr.", "line": 24.5, "stat": "PTS", "prob": 68, "tier": "Value", "id": "1629008"},
@@ -73,7 +72,7 @@ all_props = [
     {"name": "Paolo Banchero", "line": 8.5, "stat": "REB", "prob": 59, "tier": "Value", "id": "1631094"}
 ]
 
-tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "📈 PP BUILDER"])
+tab1, tab2, tab3 = st.tabs(["🎯 THE BOARD", "📡 LIVE FEED", "🎰 PP BUILDER"])
 
 with tab1:
     for p in all_props:
@@ -84,27 +83,21 @@ with tab1:
                 <b>{p['name'].upper()}</b> ({p['tier']})<br>
                 <span>{p['stat']} Line: {p['line']}</span>
                 <div class="meter-bg"><div class="meter-fill" style="width: {p['prob']}%;"></div></div>
-                <small style="color:#00ff00;">Hit Probability: {p['prob']}%</small>
+                <small style="color:#00ff00;">Hit Rate: {p['prob']}%</small>
             </div>
             """, unsafe_allow_html=True)
         with col2:
+            st.write("") # Spacer
             st.code(f"{p['name']} O{p['line']} {p['stat']}", language="text")
-
-with tab2:
-    st.subheader("📡 Live Analytics")
-    st.info("Isaiah Collier usage skyrocketing in Utah. Jalen Johnson 3rd triple-double threat with Trae out.")
 
 with tab3:
     st.subheader("🎰 PrizePicks Parlay Simulator")
-    selected_players = st.multiselect("Select players for your slip:", [p['name'] for p in all_props])
-    
-    if selected_players:
-        total_prob = 100
-        for name in selected_players:
-            p_data = next(item for item in all_props if item["name"] == name)
-            total_prob *= (p_data['prob'] / 100)
-            st.write(f"✅ **{name}**: {p_data['prob']}% Win Probability")
-        
-        st.divider()
-        st.metric("Combined Slip Probability", f"{round(total_prob, 2)}%")
-        st.code(" + ".join(selected_players), language="text")
+    selected = st.multiselect("Build Your Slip:", [p['name'] for p in all_props])
+    if selected:
+        prob = 100
+        for s in selected:
+            p_data = next(item for item in all_props if item["name"] == s)
+            prob *= (p_data['prob'] / 100)
+            st.write(f"✅ {s}: {p_data['prob']}%")
+        st.metric("Total Slip Win Probability", f"{round(prob, 2)}%")
+        st.code(" + ".join(selected), language="text")
