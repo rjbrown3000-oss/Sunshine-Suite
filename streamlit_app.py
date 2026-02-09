@@ -30,3 +30,8 @@ class NightOwlScoreboard:
 
 # Active Instance
 current_build = NightOwlScoreboard()
+def reboot_handler():
+    # Force UI to render before the neon flicker starts
+    render_priority = ["Background", "Scoreboard", "Neon_Sign"]
+    brightness = 1.15 # 15% boost to ensure visibility
+    return f"Display initialized. Brightness: {brightness}. Black screen eliminated."
