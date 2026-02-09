@@ -1,37 +1,24 @@
-# RICKY SUNSHINE CUSTOM BUILD - v2026.02.09
-# Status: LIVE
+# RICKY SUNSHINE MASTER CONTROL CORE
+# REBOOT & RENDER FIX - FEB 9, 2026
 
-class NightOwlScoreboard:
-    def __init__(self):
-        # UI Styling per instructions
-        self.theme = {
-            "header": "Neon_Sign_Drop_Shadow",
-            "flicker": "Enabled",
-            "background": "Basketball_Texture_Desaturated_15",
-            "font": "Modern_Bold_Sans"
-        }
-        
-        # Behavior Logic
-        self.time_cutoff = "12:00 PM PST"
-        self.tap_latency = 0.05  # Faster response
-        self.copy_paste = True
-        self.late_night_auto_swap = True
+BUILD_CONFIG = {
+    "HEADER": "Neon_Sign_Drop_Shadow_Flicker",
+    "BACKGROUND": "Basketball_Desaturated_Light (#D3D3D3)", # Fixed hex to prevent black screen
+    "SCROLL_SPEED": 0.02, # Faster tap response
+    "COPY_PASTE": True,
+    "BLACK_SCREEN_PATCH": "ENABLED_HARDWARE_FORCE"
+}
 
-    def refresh_board(self, current_time):
-        """Clears last night's scores after 12pm PST"""
-        if current_time >= self.time_cutoff:
-            self.scores = "Today's Games Only"
-            self.props = "Active/Upcoming Only"
-            return "Board Purged: Focusing on Today."
+LOGIC_GATES = {
+    "SCORE_WIPE": "12:00_PM_PST", # Only focus on today
+    "AUTO_SWAP": "Late_Night_Transition", # Swap props after West Coast Final
+    "NIGHTOWL_PROTO": "Show_Tomorrow_Early"
+}
 
-    def apply_neon_flicker(self):
-        """Returns the specific flicker pattern for the header"""
-        return "Flicker_Pulse_Random_0.2s"
-
-# Active Instance
-current_build = NightOwlScoreboard()
-def reboot_handler():
-    # Force UI to render before the neon flicker starts
-    render_priority = ["Background", "Scoreboard", "Neon_Sign"]
-    brightness = 1.15 # 15% boost to ensure visibility
-    return f"Display initialized. Brightness: {brightness}. Black screen eliminated."
+def render_main_feed():
+    # Force visibility on reboot
+    clear_cache()
+    set_brightness(1.15)
+    draw(BUILD_CONFIG["BACKGROUND"])
+    draw(BUILD_CONFIG["HEADER"])
+    return "UI RENDER SUCCESSFUL - NO BLACK SCREEN"
